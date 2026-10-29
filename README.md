@@ -3,6 +3,7 @@
 Tutor interactivo de matemática para estudiantes de ingeniería de la **Universidad del Zulia (LUZ)**. Cubre el camino completo desde la geometría euclidiana hasta el cálculo avanzado, con procedimientos descompuestos paso a paso, gráficas interactivas y problemas de examen.
 
 **Sitio:** https://mateluz.vercel.app
+**Código:** https://github.com/josegacia2748-dotcom/mateluz
 
 ## Qué incluye
 
