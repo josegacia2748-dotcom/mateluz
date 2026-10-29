@@ -1602,6 +1602,37 @@ table.data .prose,
   }
 }
 
+/* ============ Áreas seguras (Android / pantallas con notch) ============ */
+
+@supports (padding: env(safe-area-inset-top)) {
+  .topbar {
+    padding-top: calc(12px + env(safe-area-inset-top));
+    padding-left: calc(28px + env(safe-area-inset-left));
+    padding-right: calc(28px + env(safe-area-inset-right));
+  }
+  .sidebar {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .content {
+    padding-left: calc(34px + env(safe-area-inset-left));
+    padding-right: calc(34px + env(safe-area-inset-right));
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+
+  @media (max-width: 900px) {
+    .topbar {
+      padding-left: calc(16px + env(safe-area-inset-left));
+      padding-right: calc(16px + env(safe-area-inset-right));
+    }
+    .content {
+      padding-left: calc(20px + env(safe-area-inset-left));
+      padding-right: calc(20px + env(safe-area-inset-right));
+      padding-bottom: calc(70px + env(safe-area-inset-bottom));
+    }
+  }
+}
+
 @media print {
   .sidebar,
   .topbar,

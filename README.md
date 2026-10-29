@@ -36,6 +36,7 @@ Tutor interactivo de matemática para estudiantes de ingeniería de la **Univers
 - **Motores propios** en `src/engine/`: parser de expresiones, límites, derivadas simbólicas, integración, matrices con aritmética exacta de fracciones, cónicas y análisis de funciones.
 - **Vitest** para los motores y **Edge headless + CDP** para el smoke test de interfaz.
 - Estado global con `useSyncExternalStore`, sin dependencias de gestión de estado.
+- **Capacitor 8** para Android y **Electron 45 + electron-builder** para Windows, reutilizando la misma build web.
 
 ## Desarrollo
 
@@ -50,6 +51,38 @@ npm run smoke      # smoke test de UI (requiere Edge y preview en 4173)
 
 El smoke test abre Edge headless, recorre portada, módulo, lección, ejercicio, buscador y laboratorios, y guarda capturas en `.preview/`.
 
+## Android (APK) y escritorio (Windows)
+
+La misma interfaz se empaqueta con **Capacitor** (Android) y **Electron** (Windows) sin duplicar código.
+
+### Android
+
+Requisitos: Android Studio con JDK 21+ y Android SDK 36.
+
+```bash
+npm run cap:sync      # build + copia dist/ al proyecto Android
+npm run android       # build + abre Android Studio
+npm run android:apk   # build + compila el APK de depuración con Gradle
+```
+
+- Proyecto nativo en `android/` (paquete `com.jgarapps.mateluz`).
+- En Android Studio: **Build → Build Bundle(s)/APK(s) → Build APK(s)**; el APK queda en `android/app/build/outputs/apk/debug/`.
+- El progreso se guarda en `localStorage`, que Capacitor conserva entre sesiones. El manifest declara `INTERNET` y permisos de almacenamiento heredados para exportar apuntes o capturas.
+- La interfaz usa `viewport-fit=cover` y `env(safe-area-inset-*)`: respeta notch, bordes curvos y barras de gestos de cualquier marca Android.
+
+### Windows
+
+```bash
+npm run electron:dev            # Vite + Electron en caliente
+npm run electron:build          # instalador NSIS en release/
+npm run electron:build:portable # .exe portable en release/
+npm run electron:build:dir      # carpeta sin instalador (release/win-unpacked)
+```
+
+- La build se sirve con el protocolo propio `app://bundle` (origen seguro), así que `localStorage` y el enrutado hash funcionan igual que en la web.
+- `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`.
+- Ventana principal de 1280×860 (mínimo 960×640) con menú en español.
+
 ## Estructura
 
 ```
@@ -61,8 +94,15 @@ src/
   pages/          Home, ModulePage, LessonPage, SearchPage, LabsPage, NotFound
   lib/            router hash y almacén de progreso
   styles.css      sistema de diseño (claro/oscuro, responsive)
+electron/
+  main.cjs        proceso principal: ventana, protocolo app://bundle, menú
+  preload.cjs     puente seguro (window.desktopApp)
+android/          proyecto Android generado por Capacitor (APK)
+capacitor.config.ts  identidad de la app Android (appId, webDir, scheme)
 scripts/
   smoke.mjs       prueba end-to-end con Edge + CDP
+  electron-dev.mjs  Vite + Electron para desarrollo de escritorio
+  android-apk.mjs   compila el APK de depuración con Gradle
 ```
 
 ## Despliegue
